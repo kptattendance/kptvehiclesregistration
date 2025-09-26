@@ -4,10 +4,10 @@ import Image from "next/image";
 
 export default function UnauthorizedPage() {
   return (
-    <div className="relative min-h-screen flex items-center justify-center bg-gray-900 overflow-hidden">
+    <div className="relative flex-grow flex items-center justify-center bg-gray-900 overflow-hidden">
       {/* Background Image */}
       <Image
-        src="/clgimg1.jpg" // put your background image in /public
+        src="/clgimg1.jpg"
         alt="Unauthorized Access"
         fill
         className="object-cover"

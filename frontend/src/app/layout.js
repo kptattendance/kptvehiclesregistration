@@ -27,13 +27,13 @@ export default function RootLayout({ children }) {
           className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col`}
         >
           {/* Navbar */}
-          <Navbar />
+          <Navbar className="flex-shrink-0" />
 
           {/* Main content grows to fill space */}
-          <main className="flex-grow">{children}</main>
+          <main className="flex-grow flex flex-col">{children}</main>
 
           {/* Footer */}
-          <footer className="bg-gray-900 shadow-inner py-4 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 text-center sm:text-left">
+          <footer className="flex-shrink-0 bg-gray-900 shadow-inner py-4 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 text-center sm:text-left">
             <div className="text-gray-300 text-sm">
               © {new Date().getFullYear()} KPT Mangalore Vehicle Portal. All
               rights reserved.
