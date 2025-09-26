@@ -68,7 +68,7 @@ export default function ScanPage() {
         try {
           const token = await getToken();
           const res = await axios.post(
-            "http://localhost:5000/api/scan",
+            `${process.env.NEXT_PUBLIC_API_URL}/api/scan`,
             formData,
             {
               headers: { Authorization: `Bearer ${token}` },
