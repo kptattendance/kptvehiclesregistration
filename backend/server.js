@@ -10,7 +10,7 @@ import {
   clerkClient,
 } from "@clerk/express";
 // import vehicleRoutes from "./routes/vehicleRoutes.js";
-// import scanRoutes from "./routes/scanRoutes.js";
+import scanRoutes from "./routes/scanRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import vehicleRoutes from "./routes/vehicleRoutes.js";
 
@@ -33,7 +33,8 @@ app.get("/", (req, res) => {
 // app.use("/api/vehicles", vehicleRoutes);
 // app.use("/api/scan", scanRoutes);
 app.use("/api/users", userRoutes);
-
+app.use("/api/scan", scanRoutes);
 app.use("/api/vehicles", vehicleRoutes);
+
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

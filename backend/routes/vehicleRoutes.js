@@ -1,5 +1,4 @@
 import express from "express";
-import multer from "multer";
 import {
   createVehicle,
   getVehicles,
@@ -7,14 +6,15 @@ import {
   updateVehicle,
   deleteVehicle,
 } from "../controllers/vehicleController.js";
+import { authenticateUser } from "../middleware/authMiddleware.js";
+import { uploadSingleImage } from "../middleware/uploadImage.js";
 
 const router = express.Router();
-const upload = multer({ dest: "uploads/" }); // Temporary storage before Cloudinary
 
-router.post("/", upload.single("ownerImage"), createVehicle);
-router.get("/", getVehicles);
-router.get("/:id", getVehicleById);
-router.put("/:id", upload.single("ownerImage"), updateVehicle);
-router.delete("/:id", deleteVehicle);
+router.post("/", authenticateUser, uploadSingleImage, createVehicle);
+router.get("/", authenticateUser, getVehicles);
+router.get("/:id", authenticateUser, getVehicleById);
+router.put("/:id", authenticateUser, uploadSingleImage, updateVehicle);
+router.delete("/:id", authenticateUser, deleteVehicle);
 
 export default router;

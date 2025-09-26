@@ -4,7 +4,9 @@ const VehicleSchema = new mongoose.Schema(
   {
     // Student / Owner Details
     ownerName: { type: String, required: true },
-    ownerImage: { type: String }, // optional profile image
+    ownerImage: { type: String }, // secure_url
+    ownerImageId: { type: String }, // NEW - cloudinary public_id
+
     rollNo: { type: String },
     sem: { type: String },
     department: { type: String },
@@ -30,7 +32,7 @@ const VehicleSchema = new mongoose.Schema(
     color: { type: String },
     drivingLicenseNumber: { type: String },
   },
-  { timestamps: true } // automatically adds createdAt and updatedAt
+  { timestamps: true }
 );
 
 export default mongoose.model("Vehicle", VehicleSchema);

@@ -2,25 +2,23 @@ import multer from "multer";
 import cloudinary from "../config/cloudinary.js";
 import { Readable } from "stream";
 
-// Multer memory storage (no files saved locally)
+// use memory storage (no temp files)
 const storage = multer.memoryStorage();
 const upload = multer({ storage });
 
-// Convert buffer → stream and upload to Cloudinary
-const uploadToCloudinary = (req, res, next) => {
+// helper to stream upload
+const uploadToCloudinary = (folder) => (req, res, next) => {
   if (!req.file) return next();
 
   const stream = cloudinary.uploader.upload_stream(
-    { folder: "users" }, // all profile pics go into "users" folder
+    { folder },
     (err, result) => {
       if (err) return next(err);
-
-      req.cloudinaryResult = result; // store url + public_id
+      req.cloudinaryResult = result; // secure_url, public_id etc
       next();
     }
   );
 
-  // turn buffer into a readable stream
   const bufferStream = new Readable();
   bufferStream.push(req.file.buffer);
   bufferStream.push(null);
@@ -28,6 +26,6 @@ const uploadToCloudinary = (req, res, next) => {
 };
 
 export const uploadSingleImage = [
-  upload.single("image"), // field name in frontend form
-  uploadToCloudinary,
+  upload.single("ownerImage"),
+  uploadToCloudinary("vehicles"), // all vehicle images go here
 ];
