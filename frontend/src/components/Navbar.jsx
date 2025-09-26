@@ -17,77 +17,69 @@ export default function Navbar() {
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Get email and role of logged in user
   const role = user?.publicMetadata?.role;
 
-  // Redirect unauthorized users
   useEffect(() => {
     if (isSignedIn && role !== "admin" && role !== "user") {
       router.push("/unauthorized");
     }
   }, [isSignedIn, role, router]);
 
-  // Toggle mobile menu
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (
-    <nav className="bg-white shadow-md">
+    <nav className="bg-gradient-to-r from-blue-500 via-blue-600 to-blue-700 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16 items-center">
-          {/* Logo */}
-          <Link href="/">
-            <div className="flex flex-row items-center space-x-2">
-              <Image
-                src="/logo.jpg"
-                alt="College Logo"
-                width={60}
-                height={50}
-              />
-              <span className="font-bold text-xl text-gray-800">
-                KPT Vehicle Portal
-              </span>
-            </div>
+          {/* Logo + Text */}
+          <Link href="/" className="flex items-center space-x-3">
+            <Image src="/logo1.png" alt="College Logo" width={50} height={50} />
+            <span className="font-bold text-xl text-white">
+              KPT Vehicle Portal
+            </span>
           </Link>
 
           {/* Desktop Links */}
           <SignedIn>
             {role === "admin" && (
               <div className="hidden md:flex items-center space-x-6">
-                <Link href="/" className="text-gray-700 hover:text-blue-600">
+                <Link
+                  href="/"
+                  className="text-white hover:bg-white/20 px-3 py-2 rounded-md transition"
+                >
                   Home
                 </Link>
                 <Link
                   href="/addUser"
-                  className="text-gray-700 hover:text-blue-600"
+                  className="text-white hover:bg-white/20 px-3 py-2 rounded-md transition"
                 >
                   Add User
                 </Link>
                 <Link
                   href="/register-vehicle"
-                  className="text-gray-700 hover:text-blue-600"
+                  className="text-white hover:bg-white/20 px-3 py-2 rounded-md transition"
                 >
                   Register Vehicle
                 </Link>
                 <Link
                   href="/vehicleList"
-                  className="text-gray-700 hover:text-blue-600"
+                  className="text-white hover:bg-white/20 px-3 py-2 rounded-md transition"
                 >
                   Vehicle List
                 </Link>
                 <Link
                   href="/scan"
-                  className="text-gray-700 hover:text-blue-600"
+                  className="text-white hover:bg-white/20 px-3 py-2 rounded-md transition"
                 >
                   Scan Vehicle
                 </Link>
               </div>
             )}
-
             {role === "user" && (
               <div className="hidden md:flex items-center space-x-6">
                 <Link
                   href="/scan"
-                  className="text-gray-700 hover:text-blue-600"
+                  className="text-white hover:bg-white/20 px-3 py-2 rounded-md transition"
                 >
                   Scan Vehicle
                 </Link>
@@ -95,11 +87,11 @@ export default function Navbar() {
             )}
           </SignedIn>
 
-          {/* Auth buttons & Mobile menu toggle */}
+          {/* Auth buttons */}
           <div className="flex items-center space-x-4">
             <SignedOut>
               <SignInButton>
-                <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                <button className="px-4 py-2 bg-white text-blue-700 font-medium rounded-lg shadow hover:bg-gray-100 transition">
                   Sign In
                 </button>
               </SignInButton>
@@ -110,11 +102,11 @@ export default function Navbar() {
 
             {/* Mobile menu button */}
             <button
-              className="md:hidden p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600"
+              className="md:hidden p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-white/50"
               onClick={toggleMenu}
             >
               <svg
-                className="w-6 h-6 text-gray-700"
+                className="w-6 h-6 text-white"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -148,35 +140,35 @@ export default function Navbar() {
                 <>
                   <Link
                     href="/"
-                    className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                    className="block px-3 py-2 rounded-md text-white hover:bg-white/20 transition"
                     onClick={() => setMenuOpen(false)}
                   >
                     Home
                   </Link>
                   <Link
                     href="/addUser"
-                    className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                    className="block px-3 py-2 rounded-md text-white hover:bg-white/20 transition"
                     onClick={() => setMenuOpen(false)}
                   >
                     Add User
                   </Link>
                   <Link
                     href="/register-vehicle"
-                    className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                    className="block px-3 py-2 rounded-md text-white hover:bg-white/20 transition"
                     onClick={() => setMenuOpen(false)}
                   >
                     Register Vehicle
                   </Link>
                   <Link
                     href="/vehicleList"
-                    className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                    className="block px-3 py-2 rounded-md text-white hover:bg-white/20 transition"
                     onClick={() => setMenuOpen(false)}
                   >
                     Vehicle List
                   </Link>
                   <Link
                     href="/scan"
-                    className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                    className="block px-3 py-2 rounded-md text-white hover:bg-white/20 transition"
                     onClick={() => setMenuOpen(false)}
                   >
                     Scan Vehicle
@@ -186,7 +178,7 @@ export default function Navbar() {
               {role === "user" && (
                 <Link
                   href="/scan"
-                  className="block px-3 py-2 rounded-md text-gray-700 hover:bg-gray-100"
+                  className="block px-3 py-2 rounded-md text-white hover:bg-white/20 transition"
                   onClick={() => setMenuOpen(false)}
                 >
                   Scan Vehicle

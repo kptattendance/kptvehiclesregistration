@@ -104,8 +104,12 @@ export default function ScanPage() {
   return (
     <>
       <RoleGuard allowedRoles={["admin", "user"]}>
-        <div className="flex flex-col items-center p-4">
-          <h1 className="text-2xl font-bold mb-4">Scan Vehicle Plate</h1>
+        <div className="flex flex-col items-center p-4 min-h-screen bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200 ">
+          {/* <div className="min-h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 py-10 px-4"> */}
+          {/* <div className="max-w-2xl mx-auto p-8 bg-white rounded-2xl shadow-xl transition hover:shadow-2xl"> */}
+          <h1 className="text-3xl font-extrabold mb-6 mt-6 text-center bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Scan Vehicle Plate
+          </h1>
 
           <video
             ref={videoRef}

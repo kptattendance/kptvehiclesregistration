@@ -8,7 +8,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-gray-50">
       {/* Hero Section */}
       <main className="flex-grow">
-        <div className="relative w-full h-[90vh] sm:h-[95vh] md:h-[98vh]">
+        <div className="relative w-full h-[80vh] sm:h-[95vh] md:h-[98vh]">
           {/* Image */}
           <Image
             src="/clgimg1.jpg"

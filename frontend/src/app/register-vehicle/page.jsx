@@ -84,25 +84,30 @@ export default function RegisterVehicle({ onSuccess }) {
   };
 
   return (
-    <>
-      <RoleGuard allowedRoles={["admin"]}>
-        <LoadOverlay loading={loading} message="Registering vehicle..." />
+    <RoleGuard allowedRoles={["admin"]}>
+      <LoadOverlay loading={loading} message="Registering vehicle..." />
 
-        <form
-          onSubmit={handleSubmit}
-          className="p-4 mt-6 bg-white shadow rounded-lg space-y-3"
-        >
-          <h2 className="text-xl font-bold">Register Vehicle</h2>
+      <form
+        onSubmit={handleSubmit}
+        className="p-6 mt-0 bg-white shadow rounded-lg space-y-6 min-h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 "
+      >
+        <h1 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+          Register Vehicle
+        </h1>
 
-          {/* Student / Owner Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Student / Owner Details */}
+        <div>
+          <h3 className="font-semibold text-gray-700 mb-2">
+            Student / Owner Details
+          </h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
               name="ownerName"
               placeholder="Owner Name"
               value={formData.ownerName}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
               required
             />
             <input
@@ -111,26 +116,24 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Roll No"
               value={formData.rollNo}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             />
             <select
-              name="year"
-              value={formData.year}
+              name="sem"
+              value={formData.sem}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             >
-              <option value="">Select Year</option>
-              <option value="1">1st Year</option>
-              <option value="2">2nd Year</option>
-              <option value="3">3rd Year</option>
+              <option value="">Select Semester</option>
+              <option value="1">1st Semester</option>
+              <option value="2">2nd Semester</option>
+              <option value="3">3rd Semester</option>
             </select>
-
-            {/* Department Dropdown */}
             <select
               name="department"
               value={formData.department}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
               required
             >
               <option value="">Select Department</option>
@@ -151,7 +154,7 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Phone"
               value={formData.phone}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
               required
             />
             <input
@@ -160,19 +163,22 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Email"
               value={formData.email}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             />
           </div>
+        </div>
 
-          {/* Vehicle Details */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {/* Vehicle Details */}
+        <div>
+          <h3 className="font-semibold text-gray-700 mb-2">Vehicle Details</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <input
               type="text"
               name="vehicleNumber"
               placeholder="Vehicle Number"
               value={formData.vehicleNumber}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
               required
             />
             <input
@@ -181,14 +187,14 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Vehicle Name"
               value={formData.vehicleName}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
               required
             />
             <select
               name="vehicleType"
               value={formData.vehicleType}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             >
               <option value="2-wheeler">2-Wheeler</option>
               <option value="4-wheeler">4-Wheeler</option>
@@ -197,7 +203,7 @@ export default function RegisterVehicle({ onSuccess }) {
               name="ownershipType"
               value={formData.ownershipType}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             >
               <option value="Own">Own</option>
               <option value="Relative">Relative</option>
@@ -209,7 +215,7 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Owner Contact Name (if not own)"
               value={formData.ownerContactName}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             />
             <input
               type="text"
@@ -217,7 +223,7 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Make (e.g., Honda)"
               value={formData.make}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             />
             <input
               type="text"
@@ -225,7 +231,7 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Model (e.g., Activa 5G)"
               value={formData.model}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             />
             <input
               type="text"
@@ -233,7 +239,7 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Color"
               value={formData.color}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             />
             <input
               type="text"
@@ -241,27 +247,33 @@ export default function RegisterVehicle({ onSuccess }) {
               placeholder="Driving License Number"
               value={formData.drivingLicenseNumber}
               onChange={handleChange}
-              className="border p-2 w-full rounded"
+              className="border p-2 rounded w-full"
             />
           </div>
+        </div>
 
-          {/* Profile Image */}
+        {/* Profile Image */}
+        <div>
+          <h3 className="font-semibold text-gray-700 mb-2">
+            Upload Owner Photo
+          </h3>
           <input
             type="file"
             accept="image/*"
             onChange={(e) => setFile(e.target.files[0])}
-            className="border p-2 w-full rounded"
+            className="border p-2 rounded w-full"
           />
+        </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            {loading ? "Submitting..." : "Register"}
-          </button>
-        </form>
-      </RoleGuard>
-    </>
+        {/* Submit */}
+        <button
+          type="submit"
+          disabled={loading}
+          className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700"
+        >
+          {loading ? "Submitting..." : "Register"}
+        </button>
+      </form>
+    </RoleGuard>
   );
 }

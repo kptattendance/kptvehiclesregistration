@@ -25,7 +25,13 @@ export default function AddUser() {
   const [refreshKey, setRefreshKey] = useState(0); // <--- to refresh list
 
   if (!isSignedIn) {
-    return <p>Please sign in to access this page.</p>;
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50">
+        <p className="text-xl font-semibold text-gray-700">
+          Please sign in to access this page.
+        </p>
+      </div>
+    );
   }
 
   const handleChange = (e) => {
@@ -59,7 +65,7 @@ export default function AddUser() {
         },
       });
 
-      setMessage("User created successfully!");
+      setMessage("✅ User created successfully!");
       setFormData({
         name: "",
         email: "",
@@ -72,24 +78,26 @@ export default function AddUser() {
       setRefreshKey((prev) => prev + 1);
     } catch (err) {
       console.error(err);
-      setMessage(err.response?.data?.error || "Error creating user");
+      setMessage(err.response?.data?.error || "❌ Error creating user");
     }
 
     setLoading(false);
   };
 
   return (
-    <>
-      <RoleGuard allowedRoles={["admin"]}>
-        {/* Overlay */}
-        <LoadOverlay loading={loading} message="Creating user..." />
+    <RoleGuard allowedRoles={["admin"]}>
+      {/* Overlay */}
+      <LoadOverlay loading={loading} message="Creating user..." />
 
-        <div className="max-w-2xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-          <h1 className="text-2xl font-bold mb-6">Add New User</h1>
+      <div className="min-h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 py-10 px-4">
+        <div className="max-w-2xl mx-auto p-8 bg-white rounded-2xl shadow-xl transition hover:shadow-2xl">
+          <h1 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+            Add New User
+          </h1>
 
           {message && (
             <p
-              className={`mb-4 ${
+              className={`mb-4 text-center text-sm font-medium ${
                 message.includes("successfully")
                   ? "text-green-600"
                   : "text-red-600"
@@ -99,49 +107,57 @@ export default function AddUser() {
             </p>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div>
-              <label className="block mb-1 font-medium">Name</label>
+              <label className="block mb-1 font-medium text-gray-700">
+                Name
+              </label>
               <input
                 type="text"
                 name="name"
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-medium">Email</label>
+              <label className="block mb-1 font-medium text-gray-700">
+                Email
+              </label>
               <input
                 type="email"
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-medium">Phone</label>
+              <label className="block mb-1 font-medium text-gray-700">
+                Phone
+              </label>
               <input
                 type="text"
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
               />
             </div>
 
             <div>
-              <label className="block mb-1 font-medium">Role</label>
+              <label className="block mb-1 font-medium text-gray-700">
+                Role
+              </label>
               <select
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full border px-3 py-2 rounded"
+                className="w-full border border-gray-300 px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-400"
               >
                 <option value="user">User</option>
                 <option value="admin">Admin</option>
@@ -149,19 +165,22 @@ export default function AddUser() {
             </div>
 
             <div>
-              <label className="block mb-1 font-medium">Image</label>
+              <label className="block mb-1 font-medium text-gray-700">
+                Image
+              </label>
               <input
                 type="file"
                 name="image"
                 accept="image/*"
                 onChange={handleChange}
+                className="w-full text-gray-700"
               />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+              className="w-full px-6 py-3 bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white rounded-lg hover:opacity-90 transition-all shadow-md hover:shadow-lg font-semibold"
             >
               {loading ? "Creating..." : "Create User"}
             </button>
@@ -169,8 +188,10 @@ export default function AddUser() {
         </div>
 
         {/* Refresh list on key change */}
-        <MembersList key={refreshKey} />
-      </RoleGuard>
-    </>
+        <div className="max-w-4xl mx-auto mt-10">
+          <MembersList key={refreshKey} />
+        </div>
+      </div>
+    </RoleGuard>
   );
 }

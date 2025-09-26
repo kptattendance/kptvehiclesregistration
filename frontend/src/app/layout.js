@@ -30,17 +30,15 @@ export default function RootLayout({ children }) {
           <Navbar />
 
           {/* Main content grows to fill space */}
-          <main className="flex-grow px-4 sm:px-6 lg:px-8 py-4">
-            {children}
-          </main>
+          <main className="flex-grow">{children}</main>
 
           {/* Footer */}
-          <footer className="bg-gray-200 shadow py-4 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 text-center sm:text-left">
-            <div className="text-gray-500 text-sm">
+          <footer className="bg-gray-900 shadow-inner py-4 px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-0 text-center sm:text-left">
+            <div className="text-gray-300 text-sm">
               © {new Date().getFullYear()} KPT Mangalore Vehicle Portal. All
               rights reserved.
             </div>
-            <div className="text-gray-500 text-sm">
+            <div className="text-gray-400 text-sm">
               Maintained by KPT Mangalore CSE final year students.
             </div>
           </footer>
