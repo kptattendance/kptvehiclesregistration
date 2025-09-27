@@ -1,6 +1,53 @@
 import Vehicle from "../models/Vehicle.js";
 import cloudinary from "cloudinary";
 
+// Bulk upload vehicles
+export const bulkUploadVehicles = async (req, res) => {
+  try {
+    const { vehicles } = req.body; // expects array of objects
+
+    if (!vehicles || !Array.isArray(vehicles) || vehicles.length === 0) {
+      return res.status(400).json({ error: "No vehicles provided" });
+    }
+
+    // Optional: Validate required fields
+    const requiredFields = [
+      "ownerName",
+      "rollNo",
+      "sem",
+      "department",
+      "phone",
+      "vehicleNumber",
+      "vehicleName",
+      "vehicleType",
+    ];
+
+    for (let i = 0; i < vehicles.length; i++) {
+      const v = vehicles[i];
+      for (const field of requiredFields) {
+        if (!v[field]) {
+          return res.status(400).json({
+            error: `Row ${i + 1}: Missing required field '${field}'`,
+          });
+        }
+      }
+    }
+
+    // Insert many vehicles at once
+    const insertedVehicles = await Vehicle.insertMany(vehicles, {
+      ordered: false, // continue on errors
+    });
+
+    return res.status(201).json({
+      message: `Bulk upload successful`,
+      count: insertedVehicles.length,
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ error: err.message || "Bulk upload failed" });
+  }
+};
+
 export const getVehicles = async (req, res) => {
   try {
     const vehicles = await Vehicle.find();

@@ -4,7 +4,7 @@ import axios from "axios";
 import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
 import { Pencil, Check, X, Trash2 } from "lucide-react";
-import LoadOverlay from "../../components/LoadOverlay"; // import overlay
+import LoadOverlay from "../../components/LoadOverlay";
 import RoleGuard from "../../components/RoleGuard";
 
 export default function VehicleList({ refreshKey }) {
@@ -14,9 +14,15 @@ export default function VehicleList({ refreshKey }) {
   const [editForm, setEditForm] = useState({});
   const [file, setFile] = useState(null);
 
-  // Loading overlay
   const [loading, setLoading] = useState(false);
   const [loadingMessage, setLoadingMessage] = useState("");
+
+  // extra states for filters/pagination
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterDept, setFilterDept] = useState("");
+  const [filterType, setFilterType] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const rowsPerPage = 10;
 
   // Fetch vehicles
   const fetchVehicles = async () => {
@@ -41,7 +47,7 @@ export default function VehicleList({ refreshKey }) {
     fetchVehicles();
   }, [refreshKey]);
 
-  // Edit handlers
+  // edit handlers
   const handleEdit = (vehicle) => {
     setEditingId(vehicle._id);
     setEditForm(vehicle);
@@ -135,12 +141,8 @@ export default function VehicleList({ refreshKey }) {
                 <option value="ch">Chemical Engineering</option>
                 <option value="civil">Civil Engineering</option>
                 <option value="cs">Computer Science Engineering</option>
-                <option value="ec">
-                  Electronics & Communication Engineering
-                </option>
-                <option value="eee">
-                  Electrical & Electronics Engineering
-                </option>
+                <option value="ec">Electronics & Communication Engineering</option>
+                <option value="eee">Electrical & Electronics Engineering</option>
                 <option value="me">Mechanical Engineering</option>
                 <option value="po">Polymer Engineering</option>
               </>
@@ -175,20 +177,132 @@ export default function VehicleList({ refreshKey }) {
     return value || "—";
   };
 
+  // filter + pagination
+  const filteredVehicles = vehicles
+    .filter((v) =>
+      (v.ownerName || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (v.vehicleNumber || "")
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase()) ||
+      (v.phone || "").includes(searchTerm)
+    )
+    .filter((v) => (filterDept ? v.department === filterDept : true))
+    .filter((v) => (filterType ? v.vehicleType === filterType : true));
+
+  const indexOfLast = currentPage * rowsPerPage;
+  const indexOfFirst = indexOfLast - rowsPerPage;
+  const currentVehicles = filteredVehicles.slice(indexOfFirst, indexOfLast);
+  const totalPages = Math.ceil(filteredVehicles.length / rowsPerPage);
+
+  // export CSV
+  const handleExportCSV = () => {
+    const header = [
+      "SL No",
+      "Owner",
+      "Roll No",
+      "Year",
+      "Department",
+      "Phone",
+      "Email",
+      "Vehicle Name",
+      "Vehicle No",
+      "Type",
+      "Ownership",
+      "Contact Name",
+      "Make",
+      "Model",
+      "Color",
+      "DL Number",
+    ];
+    const rows = filteredVehicles.map((v, idx) => [
+      idx + 1,
+      v.ownerName,
+      v.rollNo,
+      v.year,
+      v.department,
+      v.phone,
+      v.email,
+      v.vehicleName,
+      v.vehicleNumber,
+      v.vehicleType,
+      v.ownershipType,
+      v.ownerContactName,
+      v.make,
+      v.model,
+      v.color,
+      v.drivingLicenseNumber,
+    ]);
+    const csvContent =
+      "data:text/csv;charset=utf-8," +
+      [header, ...rows].map((e) => e.join(",")).join("\n");
+    const link = document.createElement("a");
+    link.setAttribute("href", encodeURI(csvContent));
+    link.setAttribute("download", "vehicles.csv");
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <RoleGuard allowedRoles={["admin"]}>
-      <div className="flex-grow p-4 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 min-h-0">
-        {/* Load overlay */}
+      <div className="flex-grow p-4 bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100">
         <LoadOverlay loading={loading} message={loadingMessage} />
 
         <h1 className="text-3xl font-extrabold mb-6 text-center bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mt-6">
           Registered Vehicles
         </h1>
 
+        {/* filters */}
+        <div className="flex flex-wrap gap-3 mb-4">
+          <input
+            type="text"
+            placeholder="Search Owner, Phone, Vehicle No..."
+            className="border px-3 py-2 rounded w-full sm:w-1/3"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+
+          <select
+            className="border px-3 py-2 rounded"
+            value={filterDept}
+            onChange={(e) => setFilterDept(e.target.value)}
+          >
+            <option value="">All Departments</option>
+            <option value="at">Automobile Engineering</option>
+            <option value="ch">Chemical Engineering</option>
+            <option value="civil">Civil Engineering</option>
+            <option value="cs">Computer Science Engineering</option>
+            <option value="ec">Electronics & Communication</option>
+            <option value="eee">Electrical & Electronics</option>
+            <option value="me">Mechanical Engineering</option>
+            <option value="po">Polymer Engineering</option>
+          </select>
+
+          <select
+            className="border px-3 py-2 rounded"
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+          >
+            <option value="">All Vehicle Types</option>
+            <option value="2-wheeler">2-Wheeler</option>
+            <option value="4-wheeler">4-Wheeler</option>
+          </select>
+
+          <button
+            onClick={handleExportCSV}
+            className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700"
+          >
+            Export CSV
+          </button>
+        </div>
+
         <div className="overflow-x-auto rounded-lg shadow-md border border-gray-200">
           <table className="min-w-full text-sm">
             <thead>
               <tr className="bg-gradient-to-r from-blue-50 to-indigo-50 text-gray-700">
+                <th className="border p-2">SL No</th>
                 <th className="border p-2">Image</th>
                 <th className="border p-2">Owner</th>
                 <th className="border p-2">Roll No</th>
@@ -209,13 +323,14 @@ export default function VehicleList({ refreshKey }) {
               </tr>
             </thead>
             <tbody>
-              {vehicles.map((v, idx) => (
+              {currentVehicles.map((v, idx) => (
                 <tr
                   key={v._id}
                   className={`text-center border ${
                     idx % 2 === 0 ? "bg-white" : "bg-gray-50"
                   } hover:bg-blue-50 transition`}
                 >
+                  <td className="border p-2">{indexOfFirst + idx + 1}</td>
                   <td className="border p-2">
                     {editingId === v._id ? (
                       <div className="flex flex-col items-center">
@@ -270,12 +385,7 @@ export default function VehicleList({ refreshKey }) {
                     {renderInput("vehicleType", v.vehicleType, "select", v._id)}
                   </td>
                   <td className="border p-2">
-                    {renderInput(
-                      "ownershipType",
-                      v.ownershipType,
-                      "select",
-                      v._id
-                    )}
+                    {renderInput("ownershipType", v.ownershipType, "select", v._id)}
                   </td>
                   <td className="border p-2">
                     {renderInput("ownerContactName", v.ownerContactName)}
@@ -290,12 +400,7 @@ export default function VehicleList({ refreshKey }) {
                     {renderInput("color", v.color, "text", v._id)}
                   </td>
                   <td className="border p-2">
-                    {renderInput(
-                      "drivingLicenseNumber",
-                      v.drivingLicenseNumber,
-                      "text",
-                      v._id
-                    )}
+                    {renderInput("drivingLicenseNumber", v.drivingLicenseNumber, "text", v._id)}
                   </td>
                   <td className="p-2 flex gap-2 justify-center">
                     {editingId === v._id ? (
@@ -334,13 +439,34 @@ export default function VehicleList({ refreshKey }) {
               ))}
               {vehicles.length === 0 && (
                 <tr>
-                  <td colSpan="17" className="p-3 text-gray-500">
+                  <td colSpan="18" className="p-3 text-gray-500">
                     No vehicles registered
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
+        </div>
+
+        {/* pagination */}
+        <div className="flex justify-center items-center gap-3 mt-4">
+          <button
+            onClick={() => setCurrentPage((p) => Math.max(p - 1, 1))}
+            disabled={currentPage === 1}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Prev
+          </button>
+          <span>
+            Page {currentPage} of {totalPages}
+          </span>
+          <button
+            onClick={() => setCurrentPage((p) => Math.min(p + 1, totalPages))}
+            disabled={currentPage === totalPages}
+            className="px-3 py-1 border rounded disabled:opacity-50"
+          >
+            Next
+          </button>
         </div>
       </div>
     </RoleGuard>

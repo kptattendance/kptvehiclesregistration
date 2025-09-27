@@ -5,6 +5,7 @@ import {
   getVehicleById,
   updateVehicle,
   deleteVehicle,
+  bulkUploadVehicles,
 } from "../controllers/vehicleController.js";
 import { authenticateUser } from "../middleware/authMiddleware.js";
 import { uploadSingleImage } from "../middleware/uploadImage.js";
@@ -16,5 +17,6 @@ router.get("/", authenticateUser, getVehicles);
 router.get("/:id", authenticateUser, getVehicleById);
 router.put("/:id", authenticateUser, uploadSingleImage, updateVehicle);
 router.delete("/:id", authenticateUser, deleteVehicle);
+router.post("/bulk", authenticateUser, bulkUploadVehicles);
 
 export default router;

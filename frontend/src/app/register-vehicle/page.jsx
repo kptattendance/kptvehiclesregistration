@@ -5,6 +5,7 @@ import { useAuth } from "@clerk/nextjs";
 import { toast } from "sonner";
 import LoadOverlay from "../../components/LoadOverlay";
 import RoleGuard from "../../components/RoleGuard";
+import * as XLSX from "xlsx";
 
 export default function RegisterVehicle({ onSuccess }) {
   const { getToken } = useAuth();
@@ -26,7 +27,12 @@ export default function RegisterVehicle({ onSuccess }) {
     drivingLicenseNumber: "",
   });
   const [file, setFile] = useState(null);
+
+  // Bulk upload state
+  const [bulkFile, setBulkFile] = useState(null);
+
   const [loading, setLoading] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,6 +41,7 @@ export default function RegisterVehicle({ onSuccess }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    setLoadingMessage("Registering vehicle...");
 
     try {
       const token = await getToken();
@@ -80,13 +87,51 @@ export default function RegisterVehicle({ onSuccess }) {
       toast.error(err.response?.data?.error || "Failed to register vehicle");
     } finally {
       setLoading(false);
+      setLoadingMessage("");
+    }
+  };
+
+  // Bulk Upload Handler
+  const handleBulkUpload = async () => {
+    if (!bulkFile) {
+      toast.error("Please select an Excel file first");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setLoadingMessage("Uploading bulk vehicles...");
+      const token = await getToken();
+
+      const data = await bulkFile.arrayBuffer();
+      const workbook = XLSX.read(data);
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const rows = XLSX.utils.sheet_to_json(sheet); // Array of objects
+
+      await axios.post(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/vehicles/bulk`,
+        { vehicles: rows },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      toast.success(`Bulk upload successful! (${rows.length} vehicles)`);
+      setBulkFile(null);
+      onSuccess?.();
+    } catch (err) {
+      toast.error(err.response?.data?.error || "Bulk upload failed");
+    } finally {
+      setLoading(false);
+      setLoadingMessage("");
     }
   };
 
   return (
     <RoleGuard allowedRoles={["admin"]}>
-      <LoadOverlay loading={loading} message="Registering vehicle..." />
+      <LoadOverlay loading={loading} message={loadingMessage} />
 
+      {/* Single Entry Form */}
       <form
         onSubmit={handleSubmit}
         className="p-6 mt-0 bg-white shadow rounded-lg space-y-6 min-h-screen bg-gradient-to-r from-blue-100 via-purple-100 to-pink-100 "
@@ -124,10 +169,10 @@ export default function RegisterVehicle({ onSuccess }) {
               onChange={handleChange}
               className="border p-2 rounded w-full"
             >
-              <option value="">Select Semester</option>
-              <option value="1">1st Semester</option>
-              <option value="2">2nd Semester</option>
-              <option value="3">3rd Semester</option>
+              <option value="">Select Year</option>
+              <option value="1">1st Year</option>
+              <option value="2">2nd Year</option>
+              <option value="3">3rd Year</option>
             </select>
             <select
               name="department"
@@ -274,6 +319,31 @@ export default function RegisterVehicle({ onSuccess }) {
           {loading ? "Submitting..." : "Register"}
         </button>
       </form>
+
+      {/* Bulk Upload Section */}
+      <div className="p-6 mt-6 bg-white shadow rounded-lg space-y-4 bg-gradient-to-r from-green-50 via-blue-50 to-purple-50">
+        <h2 className="text-2xl font-bold text-center bg-gradient-to-r from-green-600 via-blue-600 to-purple-600 bg-clip-text text-transparent">
+          Bulk Upload Vehicles (Excel)
+        </h2>
+        <p className="text-sm text-gray-600 text-center">
+          Upload an Excel file with columns: ownerName, rollNo, sem, department,
+          phone, email, vehicleNumber, vehicleName, vehicleType, ownershipType,
+          ownerContactName, make, model, color, drivingLicenseNumber
+        </p>
+        <input
+          type="file"
+          accept=".xlsx,.xls"
+          onChange={(e) => setBulkFile(e.target.files[0])}
+          className="border p-2 rounded w-full"
+        />
+        <button
+          onClick={handleBulkUpload}
+          disabled={loading}
+          className="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700 w-full"
+        >
+          {loading ? "Uploading..." : "Upload Excel"}
+        </button>
+      </div>
     </RoleGuard>
   );
 }
