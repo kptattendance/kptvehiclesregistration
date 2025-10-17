@@ -18,7 +18,7 @@ const VehicleSchema = new mongoose.Schema(
     vehicleName: { type: String, required: true },
     vehicleType: {
       type: String,
-      enum: ["2-wheeler", "4-wheeler"],
+      enum: ["2-wheeler", "3-wheeler", "4-wheeler"],
       required: true,
     },
     ownershipType: {

@@ -163,10 +163,13 @@ export default function ScanPage() {
                         <span className="font-semibold">Owner:</span>{" "}
                         {vehicle.ownerName}
                       </li>
-                      <li>
-                        <span className="font-semibold">Roll No:</span>{" "}
-                        {vehicle.rollNo}
-                      </li>
+                      {vehicle.rollNo?.startsWith("103") && (
+                        <li>
+                          <span className="font-semibold">Roll No:</span>{" "}
+                          {vehicle.rollNo}
+                        </li>
+                      )}
+
                       <li>
                         <span className="font-semibold">Department:</span>{" "}
                         {vehicle.department?.toUpperCase()}

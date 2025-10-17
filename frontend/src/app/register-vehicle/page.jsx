@@ -192,6 +192,8 @@ export default function RegisterVehicle({ onSuccess }) {
               <option value="eee">Electrical & Electronics Engineering</option>
               <option value="me">Mechanical Engineering</option>
               <option value="po">Polymer Engineering</option>
+              <option value="of">Office Staffs</option>
+              <option value="ot">Others</option>
             </select>
             <input
               type="text"
@@ -242,6 +244,7 @@ export default function RegisterVehicle({ onSuccess }) {
               className="border p-2 rounded w-full"
             >
               <option value="2-wheeler">2-Wheeler</option>
+              <option value="3-wheeler">3-Wheeler</option>
               <option value="4-wheeler">4-Wheeler</option>
             </select>
             <select
