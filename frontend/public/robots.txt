@@ -1,12 +1,10 @@
-Allow all crawlers
-
+# Allow all crawlers by default
 User-agent: *
 Allow: /
 
-Host
+# Block login-protected and private pages
+Disallow: /admin-dashboard
+Disallow: /user-dashboard
 
-Host: https://kptvehicles.vercel.app
-
-Sitemap location
-
-Sitemap: https://www.google.com/search?q=https://kptvehicles.vercel.app/sitemap-index.xml
+# Sitemap location
+Sitemap: https://kptvehicles.vercel.app/sitemap-index.xml
