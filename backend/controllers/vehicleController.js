@@ -134,13 +134,11 @@ export const deleteVehicle = async (req, res) => {
 export const searchVehicleByPlate = async (req, res) => {
   try {
     const { plate } = req.query;
-    console.log("am near srach controller");
 
     if (!plate) {
       return res.status(400).json({ error: "Plate number is required" });
     }
 
-    console.log(plate);
     const cleanPlate = plate.replace(/\s+/g, ""); // remove spaces
     const vehicle = await Vehicle.findOne({
       vehicleNumber: { $regex: cleanPlate, $options: "i" },

@@ -22,6 +22,9 @@ export default function UnauthorizedPage() {
         <h1 className="text-3xl md:text-4xl font-extrabold text-red-600 mb-4">
           Access Denied
         </h1>
+        <p className="text-gray-800 mb-6 text-yellow-600">
+          You need to sign in to access this page.
+        </p>
         <p className="text-gray-800 mb-6">
           You are not authorized to access this portal. Please contact the
           administrator if you believe this is a mistake.
