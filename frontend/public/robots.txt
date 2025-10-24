@@ -1,9 +1,12 @@
-# *
+Allow all crawlers
+
 User-agent: *
 Allow: /
 
-# Host
-Host: https://kptvehicles.vercel.app/
+Host
 
-# Sitemaps
-Sitemap: https://kptvehicles.vercel.app/sitemap.xml
+Host: https://kptvehicles.vercel.app
+
+Sitemap location
+
+Sitemap: https://www.google.com/search?q=https://kptvehicles.vercel.app/sitemap-index.xml
