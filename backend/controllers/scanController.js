@@ -46,3 +46,31 @@ export const scanPlate = async (req, res) => {
     res.status(500).json({ error: "Server error scanning plate" });
   }
 };
+
+export const searchVehicleByPlate = async (req, res) => {
+  try {
+    const { plate } = req.query;
+    console.log("am near srach controller");
+
+    if (!plate) {
+      return res.status(400).json({ error: "Plate number is required" });
+    }
+
+    console.log(plate);
+    const cleanPlate = plate.replace(/\s+/g, ""); // remove spaces
+    const vehicle = await Vehicle.findOne({
+      vehicleNumber: { $regex: cleanPlate, $options: "i" },
+    });
+
+    if (!vehicle) {
+      return res.status(404).json({ message: "No matching vehicle found" });
+    }
+
+    return res.status(200).json({ vehicle });
+  } catch (err) {
+    console.error("Manual search error:", err);
+    return res
+      .status(500)
+      .json({ error: err.message || "Error searching for vehicle" });
+  }
+};

@@ -3,20 +3,21 @@ import { useRef, useState } from "react";
 import { useAuth } from "@clerk/nextjs";
 import axios from "axios";
 import { motion } from "framer-motion";
+import { Camera, Search, Car, Phone, Mail, User } from "lucide-react";
 import LoadOverlay from "../../components/LoadOverlay";
 import RoleGuard from "../../components/RoleGuard";
 
 export default function ScanPage() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
+  const { getToken } = useAuth();
 
   const [previewImage, setPreviewImage] = useState("");
   const [detectedPlate, setDetectedPlate] = useState("");
   const [vehicle, setVehicle] = useState(null);
   const [loading, setLoading] = useState(false);
   const [stream, setStream] = useState(null);
-
-  const { getToken } = useAuth();
+  const [manualPlate, setManualPlate] = useState("");
 
   async function startCamera() {
     try {
@@ -43,7 +44,6 @@ export default function ScanPage() {
   async function captureAndScan() {
     const video = videoRef.current;
     const canvas = canvasRef.current;
-
     if (!video || !stream) {
       alert("Camera is not started!");
       return;
@@ -62,7 +62,6 @@ export default function ScanPage() {
 
         const formData = new FormData();
         formData.append("ownerImage", blob, "capture.jpg");
-
         setPreviewImage(URL.createObjectURL(blob));
 
         try {
@@ -70,19 +69,13 @@ export default function ScanPage() {
           const res = await axios.post(
             `${process.env.NEXT_PUBLIC_API_URL}/api/scan`,
             formData,
-            {
-              headers: { Authorization: `Bearer ${token}` },
-            }
+            { headers: { Authorization: `Bearer ${token}` } }
           );
-
           setDetectedPlate(res.data.detectedPlate);
           setVehicle(res.data.vehicle);
         } catch (err) {
           console.error(err);
-          alert(
-            err.response?.data?.error ||
-              "Error sending to server. Please try again."
-          );
+          alert(err.response?.data?.error || "Error sending to server.");
         } finally {
           setLoading(false);
           stopCamera();
@@ -93,110 +86,175 @@ export default function ScanPage() {
     );
   }
 
+  async function handleManualSearch() {
+    let input = manualPlate.trim().toUpperCase().replace(/[\s-]/g, ""); // ✅ Clean input
+
+    if (!input) {
+      alert("Please enter a vehicle plate number.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      setDetectedPlate("");
+      setVehicle(null);
+
+      const token = await getToken();
+      const res = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/scan/findByPlate?plate=${input}`,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setDetectedPlate(input);
+      setVehicle(res.data.vehicle || null);
+      if (!res.data.vehicle) alert("No matching vehicle in DB.");
+    } catch (err) {
+      console.error(err);
+      alert(err.response?.data?.error || "Error searching in database.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <RoleGuard allowedRoles={["admin", "user"]}>
-      {/* 👇 REMOVE min-h-screen, ADD flex-grow */}
-      <div className="flex flex-col items-center flex-grow p-4 bg-gradient-to-r from-blue-200 via-purple-200 to-pink-200">
-        <h1 className="text-3xl font-extrabold mb-6 mt-6 text-center bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
-          Scan Vehicle Plate
-        </h1>
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 15 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4 }}
+          className="w-full max-w-3xl bg-white/80 backdrop-blur-xl rounded-3xl shadow-xl p-8 border border-gray-100"
+        >
+          <h1 className="text-3xl font-bold text-center bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6">
+            Smart Vehicle Plate Scanner
+          </h1>
 
-        <video
-          ref={videoRef}
-          className="border rounded w-full max-w-md mb-2"
-          autoPlay
-          muted
-        />
+          {/* Camera Section */}
+          <div className="flex flex-col items-center mb-6">
+            <div className="w-full max-w-md aspect-video bg-gray-200 rounded-xl overflow-hidden shadow-inner border border-gray-300">
+              <video
+                ref={videoRef}
+                className="w-full h-full object-cover"
+                autoPlay
+                muted
+              />
+            </div>
 
-        <canvas ref={canvasRef} style={{ display: "none" }} />
+            <canvas ref={canvasRef} style={{ display: "none" }} />
 
-        <div className="flex gap-2 mt-2">
-          <button
-            onClick={startCamera}
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Start Camera
-          </button>
-          <button
-            onClick={stopCamera}
-            disabled={!stream}
-            className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 disabled:opacity-50"
-          >
-            Stop Camera
-          </button>
-          <button
-            onClick={captureAndScan}
-            disabled={loading || !stream}
-            className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50"
-          >
-            {loading ? "Scanning..." : "Capture & Scan"}
-          </button>
-        </div>
-
-        {detectedPlate && (
-          <div className="mt-4 p-4 bg-gray-100 rounded w-full max-w-md">
-            <h2 className="text-xl font-semibold mb-2">Detected Plate:</h2>
-            <p className="text-lg font-mono">{detectedPlate}</p>
-
-            {vehicle ? (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4 }}
-                className="mt-6 w-full max-w-md"
+            <div className="flex gap-3 mt-4 flex-wrap justify-center">
+              <button
+                onClick={startCamera}
+                className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               >
-                <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-200">
-                  <div className="h-40 bg-gray-100 flex items-center justify-center">
+                <Camera size={18} /> Start Camera
+              </button>
+              <button
+                onClick={stopCamera}
+                disabled={!stream}
+                className="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+              >
+                Stop
+              </button>
+              <button
+                onClick={captureAndScan}
+                disabled={loading || !stream}
+                className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+              >
+                {loading ? "Scanning..." : "Capture & Scan"}
+              </button>
+            </div>
+          </div>
+
+          {/* Manual Search */}
+          <div className="bg-gray-50 p-5 rounded-xl border border-gray-200 shadow-inner mb-6">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={manualPlate}
+                onChange={(e) => setManualPlate(e.target.value.toUpperCase())}
+                placeholder="Enter vehicle plate number"
+                className="flex-1 border border-gray-300 rounded-lg px-4 py-2 text-center uppercase focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              />
+              <button
+                onClick={handleManualSearch}
+                disabled={loading}
+                className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition disabled:opacity-50"
+              >
+                <Search size={18} /> {loading ? "Searching..." : "Search"}
+              </button>
+            </div>
+          </div>
+
+          {/* Results */}
+          {detectedPlate && (
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="bg-white border border-gray-200 rounded-2xl shadow-lg p-6"
+            >
+              <h2 className="text-xl font-semibold mb-3 text-gray-800">
+                Detected Plate:{" "}
+                <span className="font-mono bg-gray-100 px-2 py-1 rounded">
+                  {detectedPlate}
+                </span>
+              </h2>
+
+              {vehicle ? (
+                <div className="grid md:grid-cols-2 gap-6 mt-4">
+                  <div className="flex justify-center">
                     <img
                       src={vehicle.ownerImage || "/car-placeholder.png"}
                       alt="Vehicle"
-                      className="h-full object-cover"
+                      className="h-48 w-48 object-cover rounded-xl border border-gray-300 shadow-md"
                     />
                   </div>
-
-                  <div className="p-5">
-                    <h3 className="text-xl font-bold text-gray-800 mb-3">
-                      Vehicle Details
+                  <div>
+                    <h3 className="text-lg font-semibold mb-3 text-gray-700">
+                      Vehicle Information
                     </h3>
-                    <ul className="space-y-2">
-                      <li>
-                        <span className="font-semibold">Owner:</span>{" "}
-                        {vehicle.ownerName}
+                    <ul className="space-y-2 text-gray-600">
+                      <li className="flex items-center gap-2">
+                        <User size={16} className="text-blue-600" />{" "}
+                        <span>{vehicle.ownerName}</span>
                       </li>
-                      {vehicle.rollNo?.startsWith("103") && (
+                      {vehicle.rollNo && (
                         <li>
-                          <span className="font-semibold">Roll No:</span>{" "}
-                          {vehicle.rollNo}
+                          <strong>Roll No:</strong> {vehicle.rollNo}
                         </li>
                       )}
-
                       <li>
-                        <span className="font-semibold">Department:</span>{" "}
-                        {vehicle.department?.toUpperCase()}
+                        <strong>Department:</strong>{" "}
+                        {vehicle.department?.toUpperCase() || "—"}
                       </li>
-                      <li>
-                        <span className="font-semibold">Phone:</span>{" "}
+                      <li className="flex items-center gap-2">
+                        <Phone size={16} className="text-green-600" />{" "}
                         {vehicle.phone}
                       </li>
+                      {vehicle.email && (
+                        <li className="flex items-center gap-2">
+                          <Mail size={16} className="text-purple-600" />{" "}
+                          {vehicle.email}
+                        </li>
+                      )}
                       <li>
-                        <span className="font-semibold">Email:</span>{" "}
-                        {vehicle.email}
-                      </li>
-                      <li>
-                        <span className="font-semibold">Driving License:</span>{" "}
-                        {vehicle.drivingLicenseNumber}
+                        <strong>License:</strong>{" "}
+                        {vehicle.drivingLicenseNumber || "—"}
                       </li>
                     </ul>
                   </div>
                 </div>
-              </motion.div>
-            ) : (
-              <p className="text-red-600 mt-2">No matching vehicle in DB.</p>
-            )}
-          </div>
-        )}
+              ) : (
+                <p className="text-red-600 mt-2 text-center font-medium">
+                  No matching vehicle found.
+                </p>
+              )}
+            </motion.div>
+          )}
+        </motion.div>
 
-        <LoadOverlay loading={loading} message="Scanning vehicle plate..." />
+        <LoadOverlay loading={loading} message="Processing vehicle plate..." />
       </div>
     </RoleGuard>
   );
