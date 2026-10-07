@@ -1,33 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-    <!--  🏠 Home Page  -->
     <url>
         <loc>https://kptvehicles.vercel.app/</loc>
+        <lastmod>2025-10-24</lastmod>
         <priority>1.0</priority>
     </url>
-    <!--  🚘 Vehicle Registration Page  -->
     <url>
         <loc>https://kptvehicles.vercel.app/register</loc>
+        <lastmod>2025-10-24</lastmod>
         <priority>0.9</priority>
     </url>
-    <!--  🔍 QR Scan Page  -->
     <url>
         <loc>https://kptvehicles.vercel.app/scan</loc>
+        <lastmod>2025-10-24</lastmod>
         <priority>0.8</priority>
-    </url>
-    <!--  👨‍💻 Admin Dashboard  -->
-    <url>
-        <loc>https://kptvehicles.vercel.app/admin-dashboard</loc>
-        <priority>0.6</priority>
-    </url>
-    <!--  👤 User Dashboard  -->
-    <url>
-        <loc>https://kptvehicles.vercel.app/user-dashboard</loc>
-        <priority>0.6</priority>
-    </url>
-    <!--  📞 Contact Section  -->
-    <url>
-        <loc>https://kptvehicles.vercel.app/#contact</loc>
-        <priority>0.5</priority>
     </url>
 </urlset>
